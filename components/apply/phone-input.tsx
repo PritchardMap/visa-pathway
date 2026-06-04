@@ -107,7 +107,6 @@ export function PhoneInput({ value, onChange, error }: PhoneInputProps) {
             alignItems: 'center',
             gap: 5,
             padding: '10px 10px',
-            borderRight: '1px solid var(--border)',
             background: 'transparent',
             border: 'none',
             borderRight: '1px solid var(--border)',
