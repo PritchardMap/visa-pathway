@@ -47,14 +47,7 @@ export const metadata: Metadata = {
     title: 'Visa Pathway — South African Visa & Immigration Guides',
     description:
       'Clear, verified guides for South African visas, permits, and citizenship. Every document, cost, and process explained.',
-    images: [
-      {
-        url: '/brand/visa-pathway-logo.png',
-        width: 1914,
-        height: 991,
-        alt: 'Visa Pathway — South African Immigration Guides',
-      },
-    ],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Visa Pathway — South African Immigration Guides' }],
     locale: 'en_ZA',
   },
   twitter: {
@@ -62,7 +55,7 @@ export const metadata: Metadata = {
     title: 'Visa Pathway — South African Visa & Immigration Guides',
     description:
       'Clear, verified guides for South African visas, permits, and citizenship. Every document, cost, and process explained.',
-    images: ['/brand/visa-pathway-logo.png'],
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
