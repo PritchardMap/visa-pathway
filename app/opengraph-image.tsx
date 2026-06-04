@@ -76,7 +76,7 @@ export default function OGImage() {
           style={{
             display: 'flex',
             backgroundColor: 'rgba(212,147,10,0.09)',
-            borderRadius: '25%',
+            borderRadius: '50px',
             padding: '8px 12px',
           }}
         >
