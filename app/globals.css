@@ -1,26 +1,166 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* SA earth-tone palette — all in OKLCH for perceptual uniformity */
+  --background: oklch(97% 0.006 75);
+  --surface: oklch(95.5% 0.006 75);
+  --surface-2: oklch(93% 0.007 75);
+  --surface-hover: oklch(91% 0.008 75);
+
+  --text-primary: oklch(18% 0.012 75);
+  --text-secondary: oklch(40% 0.012 75);
+  --text-muted: oklch(57% 0.008 75);
+
+  --amber: oklch(68% 0.14 72);
+  --amber-dark: oklch(52% 0.14 72);
+  --amber-light: oklch(85% 0.1 72);
+  --amber-subtle: oklch(93% 0.07 72);
+
+  --green: oklch(44% 0.09 155);
+  --green-dark: oklch(34% 0.08 155);
+  --green-light: oklch(62% 0.07 155);
+  --green-subtle: oklch(92% 0.05 155);
+
+  --border: oklch(87% 0.007 75);
+  --border-subtle: oklch(92% 0.006 75);
+  --border-strong: oklch(75% 0.01 75);
+
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.05);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.07), 0 1px 3px oklch(0% 0 0 / 0.04);
+  --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.09), 0 2px 6px oklch(0% 0 0 / 0.05);
 }
 
 @theme inline {
+  --font-sans: var(--font-figtree);
+  --font-serif: var(--font-literata);
+
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-hover: var(--surface-hover);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-amber: var(--amber);
+  --color-amber-dark: var(--amber-dark);
+  --color-amber-light: var(--amber-light);
+  --color-amber-subtle: var(--amber-subtle);
+
+  --color-green: var(--green);
+  --color-green-dark: var(--green-dark);
+  --color-green-light: var(--green-light);
+  --color-green-subtle: var(--green-subtle);
+
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1,
+      'calt' 1;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  p {
+    color: var(--text-secondary);
+  }
+
+  a {
+    color: var(--amber-dark);
+    text-decoration-color: color-mix(
+      in oklch,
+      var(--amber-dark) 30%,
+      transparent
+    );
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+  }
+
+  a:hover {
+    color: var(--amber);
+  }
+
+  ::selection {
+    background-color: var(--amber-subtle);
+    color: var(--amber-dark);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+    border-radius: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .heading-display {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .heading-section {
+    font-family: var(--font-serif), Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .label-caps {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .container-page {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  .container-narrow {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
 }
