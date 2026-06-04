@@ -75,9 +75,9 @@ export default function OGImage() {
         <div
           style={{
             display: 'flex',
-            backgroundColor: 'rgba(255, 255, 255, 0.25)',
+            backgroundColor: 'rgba(212,147,10,0.09)',
             borderRadius: 8,
-            padding: '12px 16px',
+            padding: '8px 12px',
           }}
         >
           {/* Wide logo: 1914×991 → render at ~560×290 */}
