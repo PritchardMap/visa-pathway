@@ -4,6 +4,8 @@ export const runtime = 'edge';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://visapathway.co.za';
+
 export default function OGImage() {
   return new ImageResponse(
     (
@@ -57,7 +59,7 @@ export default function OGImage() {
           }}
         />
 
-        {/* Wordmark + tagline */}
+        {/* Logo card + tagline */}
         <div
           style={{
             display: 'flex',
@@ -69,52 +71,23 @@ export default function OGImage() {
             padding: '0 88px 24px',
           }}
         >
-          {/* VISA → */}
+          {/* Logo on white pill */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: 18,
-              lineHeight: 1,
+              backgroundColor: '#FFFFFF',
+              borderRadius: 20,
+              padding: '28px 48px',
             }}
           >
-            <span
-              style={{
-                fontSize: 118,
-                fontWeight: 900,
-                color: '#D4930A',
-                letterSpacing: '-4px',
-                lineHeight: 1,
-              }}
-            >
-              VISA
-            </span>
-            <span
-              style={{
-                fontSize: 84,
-                fontWeight: 900,
-                color: '#D4930A',
-                marginTop: 10,
-                lineHeight: 1,
-              }}
-            >
-              ➔
-            </span>
+            {/* Wide logo: 1914×991 → render at ~560×290 */}
+            <img
+              src={`${SITE_URL}/brand/visa-pathway-logo.png`}
+              width={560}
+              height={290}
+              style={{ objectFit: 'contain' }}
+            />
           </div>
-
-          {/* PATHWAY */}
-          <span
-            style={{
-              fontSize: 118,
-              fontWeight: 900,
-              color: '#FFFFFF',
-              letterSpacing: '-4px',
-              marginTop: -14,
-              lineHeight: 1,
-            }}
-          >
-            PATHWAY
-          </span>
 
           {/* Amber rule */}
           <div
@@ -122,7 +95,7 @@ export default function OGImage() {
               width: 72,
               height: 3,
               backgroundColor: '#D4930A',
-              marginTop: 36,
+              marginTop: 40,
               marginBottom: 28,
               display: 'flex',
             }}
