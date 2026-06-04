@@ -360,9 +360,9 @@ export const REQUIRED_DOCUMENTS: RequiredDocument[] = [
     cost: 'R40–R80 at most photo studios',
     where: [
       {
-        name: 'Clicks or Dischem',
+        name: 'PostNet or 3@1',
         notes:
-          'Most Clicks and Dischem stores have photo booths or counters. Cost approximately R40–R60.',
+          'Most PostNet and 3@1 branches offer passport photo services. Cost approximately R40–R60.',
         city: 'Nationwide',
       },
       {
@@ -562,7 +562,7 @@ export const FEES_SUMMARY = [
   {
     item: 'Passport photos (2)',
     amount: 'R40–R80',
-    notes: 'Clicks, Dischem, or photo studio',
+    notes: 'PostNet, 3@1, or photo studio',
   },
   {
     item: 'Certified copies of documents',

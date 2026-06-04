@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
   useForm,
   useController,
@@ -12,17 +13,21 @@ import { z } from 'zod';
 import {
   ArrowRight,
   ArrowLeft,
-  CheckCircle2,
   User,
   Home,
   FileText,
   ClipboardList,
-  Download,
+  CheckCircle2,
 } from 'lucide-react';
 import { APPLICATION_FORMS } from '@/lib/citizenship-data';
 import { CountrySelect } from '@/components/apply/country-select';
 import { PhoneInput } from '@/components/apply/phone-input';
 import LinkifyText from '@/lib/linkify';
+
+const PdfDownloadButton = dynamic(
+  () => import('@/components/apply/pdf-download-button').then((m) => m.PdfDownloadButton),
+  { ssr: false, loading: () => null }
+);
 
 // --- Schema ---
 
@@ -38,6 +43,27 @@ const personalSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
   email: z.string().email('Valid email required'),
   maritalStatus: z.enum(['single', 'married', 'divorced', 'widowed']),
+  // Married
+  spouseFirstName: z.string().optional(),
+  spouseMiddleNames: z.string().optional(),
+  spouseLastName: z.string().optional(),
+  spouseMaidenName: z.string().optional(),
+  spouseDateOfBirth: z.string().optional(),
+  spouseNationality: z.string().optional(),
+  marriageDate: z.string().optional(),
+  marriagePlace: z.string().optional(),
+  // Divorced
+  divorceDate: z.string().optional(),
+  divorceCountry: z.string().optional(),
+  divorceDecreeNumber: z.string().optional(),
+  // Widowed
+  deceasedSpouseName: z.string().optional(),
+  deceasedDateOfDeath: z.string().optional(),
+  // PR permit
+  prNumber: z.string().min(1, 'PR permit number is required'),
+  prReferenceNumber: z.string().optional(),
+  prIssueDate: z.string().min(1, 'PR issue date is required'),
+  yearsInSA: z.string().min(1, 'Required'),
 });
 
 const residenceSchema = z.object({
@@ -46,9 +72,6 @@ const residenceSchema = z.object({
   city: z.string().min(1, 'City is required'),
   province: z.string().min(1, 'Province is required'),
   postalCode: z.string().min(4, 'Postal code is required'),
-  prNumber: z.string().min(1, 'PR permit number is required'),
-  prIssueDate: z.string().min(1, 'PR issue date is required'),
-  yearsInSA: z.string().min(1, 'Required'),
 });
 
 const backgroundSchema = z.object({
@@ -364,7 +387,7 @@ function CountrySelectField({
   mode,
   placeholder,
 }: {
-  name: 'countryOfBirth' | 'nationality';
+  name: 'countryOfBirth' | 'nationality' | 'spouseNationality';
   control: Control<PersonalData>;
   error?: boolean;
   mode: 'country' | 'nationality';
@@ -403,6 +426,20 @@ function PhoneInputField({
 
 // --- Step 1: Personal ---
 
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div
+      className='sm:col-span-2 flex items-center gap-3 pt-2'
+      style={{ borderTop: '1px solid var(--border)' }}
+    >
+      <p className='label-caps m-0' style={{ color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+        {label}
+      </p>
+      <div style={{ flex: 1, height: 1, backgroundColor: 'var(--border)' }} />
+    </div>
+  );
+}
+
 function StepPersonal({
   form,
   onSubmit,
@@ -414,8 +451,10 @@ function StepPersonal({
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = form;
+  const maritalStatus = watch('maritalStatus');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -429,37 +468,18 @@ function StepPersonal({
 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6'>
           <Field label='First Name' error={errors.firstName?.message}>
-            <input
-              {...register('firstName')}
-              style={inputStyle}
-              placeholder='e.g. Tendai'
-            />
+            <input {...register('firstName')} style={inputStyle} placeholder='e.g. Tendai' />
           </Field>
           <Field label='Middle Name(s)' error={errors.middleNames?.message}>
-            <input
-              {...register('middleNames')}
-              style={inputStyle}
-              placeholder='Optional'
-            />
+            <input {...register('middleNames')} style={inputStyle} placeholder='Optional' />
           </Field>
           <Field label='Surname' error={errors.lastName?.message}>
-            <input
-              {...register('lastName')}
-              style={inputStyle}
-              placeholder='e.g. Moyo'
-            />
+            <input {...register('lastName')} style={inputStyle} placeholder='e.g. Moyo' />
           </Field>
           <Field label='Date of Birth' error={errors.dateOfBirth?.message}>
-            <input
-              {...register('dateOfBirth')}
-              type='date'
-              style={inputStyle}
-            />
+            <input {...register('dateOfBirth')} type='date' style={inputStyle} />
           </Field>
-          <Field
-            label='Country of Birth'
-            error={errors.countryOfBirth?.message}
-          >
+          <Field label='Country of Birth' error={errors.countryOfBirth?.message}>
             <CountrySelectField
               name='countryOfBirth'
               control={control}
@@ -478,49 +498,131 @@ function StepPersonal({
             />
           </Field>
           <Field label='Passport Number' error={errors.passportNumber?.message}>
-            <input
-              {...register('passportNumber')}
-              style={inputStyle}
-              placeholder='e.g. AN123456'
-            />
+            <input {...register('passportNumber')} style={inputStyle} placeholder='e.g. AN123456' />
           </Field>
           <Field
             label='SA ID Number'
             error={errors.saIdNumber?.message}
-            hint='Enter your South African ID number (required for PR holders)'
+            hint='Your South African ID number (required for PR holders)'
           >
-            <input
-              {...register('saIdNumber')}
-              style={inputStyle}
-              placeholder='e.g. 9412086243183'
-            />
+            <input {...register('saIdNumber')} style={inputStyle} placeholder='e.g. 8001015009087' />
           </Field>
           <Field label='Phone Number' error={errors.phone?.message}>
-            <PhoneInputField
-              name='phone'
-              control={control}
-              error={!!errors.phone}
-            />
+            <PhoneInputField name='phone' control={control} error={!!errors.phone} />
           </Field>
           <Field label='Email Address' error={errors.email?.message}>
-            <input
-              {...register('email')}
-              type='email'
-              style={inputStyle}
-              placeholder='your@email.com'
-            />
+            <input {...register('email')} type='email' style={inputStyle} placeholder='your@email.com' />
           </Field>
-        </div>
 
-        <div className='mb-6'>
-          <Field label='Marital Status' error={errors.maritalStatus?.message}>
-            <select {...register('maritalStatus')} style={selectStyle}>
-              <option value=''>Select…</option>
-              <option value='single'>Single</option>
-              <option value='married'>Married</option>
-              <option value='divorced'>Divorced</option>
-              <option value='widowed'>Widowed</option>
-            </select>
+          {/* Marital status */}
+          <div className='sm:col-span-2'>
+            <Field label='Marital Status' error={errors.maritalStatus?.message}>
+              <select {...register('maritalStatus')} style={selectStyle}>
+                <option value=''>Select…</option>
+                <option value='single'>Single</option>
+                <option value='married'>Married</option>
+                <option value='divorced'>Divorced</option>
+                <option value='widowed'>Widowed</option>
+              </select>
+            </Field>
+          </div>
+
+          {maritalStatus === 'married' && (
+            <>
+              <SectionDivider label='Spouse Details' />
+              <Field label="Spouse's First Name" error={errors.spouseFirstName?.message}>
+                <input {...register('spouseFirstName')} style={inputStyle} placeholder='As per marriage certificate' />
+              </Field>
+              <Field label="Spouse's Middle Name(s)" error={errors.spouseMiddleNames?.message}>
+                <input {...register('spouseMiddleNames')} style={inputStyle} placeholder='Optional' />
+              </Field>
+              <Field label="Spouse's Surname" error={errors.spouseLastName?.message}>
+                <input {...register('spouseLastName')} style={inputStyle} placeholder='As per marriage certificate' />
+              </Field>
+              <Field label="Spouse's Maiden Name" error={errors.spouseMaidenName?.message}>
+                <input {...register('spouseMaidenName')} style={inputStyle} placeholder='If applicable' />
+              </Field>
+              <Field label="Spouse's Date of Birth" error={errors.spouseDateOfBirth?.message}>
+                <input {...register('spouseDateOfBirth')} type='date' style={inputStyle} />
+              </Field>
+              <Field label="Spouse's Nationality" error={errors.spouseNationality?.message}>
+                <CountrySelectField
+                  name='spouseNationality'
+                  control={control}
+                  error={!!errors.spouseNationality}
+                  mode='nationality'
+                  placeholder='Select nationality…'
+                />
+              </Field>
+              <Field label='Date of Marriage' error={errors.marriageDate?.message}>
+                <input {...register('marriageDate')} type='date' style={inputStyle} />
+              </Field>
+              <div className='sm:col-span-2'>
+                <Field
+                  label='Place of Marriage'
+                  error={errors.marriagePlace?.message}
+                  hint='City and country where the marriage was solemnised'
+                >
+                  <input {...register('marriagePlace')} style={inputStyle} placeholder='e.g. Harare, Zimbabwe' />
+                </Field>
+              </div>
+            </>
+          )}
+
+          {maritalStatus === 'divorced' && (
+            <>
+              <SectionDivider label='Divorce Details' />
+              <Field label='Date of Divorce' error={errors.divorceDate?.message}>
+                <input {...register('divorceDate')} type='date' style={inputStyle} />
+              </Field>
+              <Field label='Country of Divorce' error={errors.divorceCountry?.message}>
+                <input {...register('divorceCountry')} style={inputStyle} placeholder='e.g. South Africa' />
+              </Field>
+              <div className='sm:col-span-2'>
+                <Field
+                  label='Divorce Decree / Court Order Number'
+                  error={errors.divorceDecreeNumber?.message}
+                  hint='Reference number printed on your divorce order'
+                >
+                  <input {...register('divorceDecreeNumber')} style={inputStyle} placeholder='e.g. 12345/2015' />
+                </Field>
+              </div>
+            </>
+          )}
+
+          {maritalStatus === 'widowed' && (
+            <>
+              <SectionDivider label='Deceased Spouse Details' />
+              <Field label="Deceased Spouse's Full Name" error={errors.deceasedSpouseName?.message}>
+                <input {...register('deceasedSpouseName')} style={inputStyle} placeholder='As per death certificate' />
+              </Field>
+              <Field label='Date of Death' error={errors.deceasedDateOfDeath?.message}>
+                <input {...register('deceasedDateOfDeath')} type='date' style={inputStyle} />
+              </Field>
+            </>
+          )}
+
+          {/* PR Permit Details */}
+          <SectionDivider label='Permanent Residence Permit' />
+          <Field
+            label='Permit Number'
+            error={errors.prNumber?.message}
+            hint='From your permanent residence certificate'
+          >
+            <input {...register('prNumber')} style={inputStyle} placeholder='e.g. PRP/00000/2020 PRT' />
+          </Field>
+          <Field
+            label='Reference Number'
+            error={errors.prReferenceNumber?.message}
+            hint='Case reference on your PR approval letter'
+          >
+            <input {...register('prReferenceNumber')} style={inputStyle} placeholder='e.g. PRP0000000' />
+          </Field>
+          <Field label='Issue Date' error={errors.prIssueDate?.message}>
+            <input {...register('prIssueDate')} type='date' style={inputStyle} />
+          </Field>
+          <Field label='Years Lived in South Africa' error={errors.yearsInSA?.message}>
+            <input {...register('yearsInSA')} style={inputStyle} placeholder='e.g. 7' />
           </Field>
         </div>
 
@@ -554,80 +656,32 @@ function StepResidence({
           className='heading-section text-lg mb-6'
           style={{ color: 'var(--text-primary)' }}
         >
-          Residence & Permit Details
+          Residential Address
         </h2>
 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6'>
           <div className='sm:col-span-2'>
             <Field label='Street Address' error={errors.streetAddress?.message}>
-              <input
-                {...register('streetAddress')}
-                style={inputStyle}
-                placeholder='e.g. 14 Main Road'
-              />
+              <input {...register('streetAddress')} style={inputStyle} placeholder='e.g. 14 Main Road' />
             </Field>
           </div>
           <Field label='Suburb' error={errors.suburb?.message}>
-            <input
-              {...register('suburb')}
-              style={inputStyle}
-              placeholder='e.g. Sandton'
-            />
+            <input {...register('suburb')} style={inputStyle} placeholder='e.g. Sandton' />
           </Field>
           <Field label='City' error={errors.city?.message}>
-            <input
-              {...register('city')}
-              style={inputStyle}
-              placeholder='e.g. Johannesburg'
-            />
+            <input {...register('city')} style={inputStyle} placeholder='e.g. Johannesburg' />
           </Field>
           <Field label='Province' error={errors.province?.message}>
             <select {...register('province')} style={selectStyle}>
               <option value=''>Select province…</option>
               {PROVINCES.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
+                <option key={p} value={p}>{p}</option>
               ))}
             </select>
           </Field>
           <Field label='Postal Code' error={errors.postalCode?.message}>
-            <input
-              {...register('postalCode')}
-              style={inputStyle}
-              placeholder='e.g. 2196'
-            />
+            <input {...register('postalCode')} style={inputStyle} placeholder='e.g. 2196' />
           </Field>
-          <Field
-            label='PR Permit Number'
-            error={errors.prNumber?.message}
-            hint='From your permanent residence certificate'
-          >
-            <input
-              {...register('prNumber')}
-              style={inputStyle}
-              placeholder='e.g. PR-12345/2019'
-            />
-          </Field>
-          <Field label='PR Issue Date' error={errors.prIssueDate?.message}>
-            <input
-              {...register('prIssueDate')}
-              type='date'
-              style={inputStyle}
-            />
-          </Field>
-          <div className='sm:col-span-2'>
-            <Field
-              label='Years lived in South Africa'
-              error={errors.yearsInSA?.message}
-            >
-              <input
-                {...register('yearsInSA')}
-                style={inputStyle}
-                placeholder='e.g. 7 years'
-              />
-            </Field>
-          </div>
         </div>
 
         <NavButtons onBack={onBack} />
@@ -755,13 +809,6 @@ function StepBackground({
 // --- Step 4: Review & Export ---
 
 function StepReview({ data, onBack }: { data: AllData; onBack: () => void }) {
-  const [printed, setPrinted] = useState(false);
-
-  const handlePrint = () => {
-    setPrinted(true);
-    window.print();
-  };
-
   const sections: {
     label: string;
     fields: { key: string; value: string | undefined }[];
@@ -789,6 +836,30 @@ function StepReview({ data, onBack }: { data: AllData; onBack: () => void }) {
               data.maritalStatus.slice(1)
             : undefined,
         },
+        // Married
+        {
+          key: "Spouse's Full Name",
+          value: [data.spouseFirstName, data.spouseMiddleNames, data.spouseLastName]
+            .filter(Boolean)
+            .join(' ') || undefined,
+        },
+        { key: "Spouse's Maiden Name", value: data.spouseMaidenName },
+        { key: "Spouse's Date of Birth", value: data.spouseDateOfBirth },
+        { key: "Spouse's Nationality", value: data.spouseNationality },
+        { key: 'Date of Marriage', value: data.marriageDate },
+        { key: 'Place of Marriage', value: data.marriagePlace },
+        // Divorced
+        { key: 'Date of Divorce', value: data.divorceDate },
+        { key: 'Country of Divorce', value: data.divorceCountry },
+        { key: 'Divorce Decree No.', value: data.divorceDecreeNumber },
+        // Widowed
+        { key: "Deceased Spouse's Name", value: data.deceasedSpouseName },
+        { key: 'Date of Death', value: data.deceasedDateOfDeath },
+        // PR
+        { key: 'PR Permit Number', value: data.prNumber },
+        { key: 'PR Reference Number', value: data.prReferenceNumber },
+        { key: 'PR Issue Date', value: data.prIssueDate },
+        { key: 'Years in SA', value: data.yearsInSA },
       ],
     },
     {
@@ -799,9 +870,6 @@ function StepReview({ data, onBack }: { data: AllData; onBack: () => void }) {
         { key: 'City', value: data.city },
         { key: 'Province', value: data.province },
         { key: 'Postal Code', value: data.postalCode },
-        { key: 'PR Permit Number', value: data.prNumber },
-        { key: 'PR Issue Date', value: data.prIssueDate },
-        { key: 'Years in SA', value: data.yearsInSA },
       ],
     },
     {
@@ -848,21 +916,7 @@ function StepReview({ data, onBack }: { data: AllData; onBack: () => void }) {
           >
             Your Application Summary
           </h2>
-          <button
-            onClick={handlePrint}
-            className='inline-flex items-center gap-2 text-sm font-semibold'
-            style={{
-              backgroundColor: 'var(--green)',
-              color: 'var(--background)',
-              padding: '9px 20px',
-              borderRadius: 8,
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <Download size={14} />
-            Print / Save PDF
-          </button>
+          <PdfDownloadButton data={data} />
         </div>
 
         <p
@@ -973,20 +1027,6 @@ function StepReview({ data, onBack }: { data: AllData; onBack: () => void }) {
           ))}
         </div>
       </div>
-
-      {printed && (
-        <div
-          className='flex items-center gap-2 text-sm p-4 mb-4'
-          style={{
-            backgroundColor: 'oklch(96% 0.03 155)',
-            borderRadius: 8,
-            color: 'var(--green-dark)',
-          }}
-        >
-          <CheckCircle2 size={16} />
-          Summary printed. Use the values above to complete your DHA forms.
-        </div>
-      )}
 
       <div className='flex items-center justify-between'>
         <button

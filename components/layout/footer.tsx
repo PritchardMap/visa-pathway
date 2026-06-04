@@ -10,7 +10,7 @@ export function Footer() {
       }}
     >
       <div className='container-page py-12'>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mb-10'>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-8 mb-10'>
           <div>
             <Image
               src='/brand/visa-pathway-logo.png'
@@ -21,13 +21,14 @@ export function Footer() {
                 objectFit: 'contain',
                 objectPosition: 'left',
                 marginBottom: 12,
+                width: 'auto',
               }}
             />
             <p
               className='text-sm'
               style={{ color: 'var(--text-muted)', maxWidth: '28ch' }}
             >
-              Helping immigrants navigate South African visas and citizenship.
+              Clear, verified guides for South African visas, permits, and citizenship.
             </p>
           </div>
 
@@ -36,13 +37,39 @@ export function Footer() {
               className='label-caps mb-4'
               style={{ color: 'var(--text-muted)', marginBottom: 16 }}
             >
-              Sections
+              Work Visas
             </p>
             <ul className='space-y-2 list-none p-0 m-0'>
               {[
-                { href: '/guide', label: 'Step-by-Step Guide' },
-                { href: '/checklist', label: 'Document Checklist' },
-                { href: '/apply', label: 'Application Assistant' },
+                { href: '/critical-skills/guide', label: 'Critical Skills Work Visa' },
+                { href: '/general-work/guide', label: 'General Work Visa' },
+                { href: '/business-visa/guide', label: 'Business Visa' },
+              ].map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className='text-sm no-underline hover:underline'
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p
+              className='label-caps mb-4'
+              style={{ color: 'var(--text-muted)', marginBottom: 16 }}
+            >
+              Other Permits
+            </p>
+            <ul className='space-y-2 list-none p-0 m-0'>
+              {[
+                { href: '/study-visa/guide', label: 'Study Visa' },
+                { href: '/permanent-residence/guide', label: 'Permanent Residence' },
+                { href: '/guide', label: 'Citizenship by Naturalisation' },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -71,12 +98,16 @@ export function Footer() {
                   label: 'Department of Home Affairs',
                 },
                 {
-                  href: 'https://www.saps.gov.za',
-                  label: 'South African Police Service',
+                  href: 'https://visa.vfsglobal.com/zaf/en/dha',
+                  label: 'VFS Global SA (DHA)',
                 },
                 {
-                  href: 'https://dirco.gov.za/foreign-representation-in-south-africa/',
-                  label: 'Foreign Embassies in SA',
+                  href: 'https://www.saqa.org.za',
+                  label: 'SAQA (Qualification Evaluation)',
+                },
+                {
+                  href: 'https://www.saps.gov.za',
+                  label: 'SAPS (Police Clearance)',
                 },
               ].map(({ href, label }) => (
                 <li key={href}>

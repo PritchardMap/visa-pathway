@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
+const NAV_LINKS = [
+  { href: '/critical-skills/guide', label: 'Critical Skills' },
+  { href: '/general-work/guide', label: 'Work Visa' },
+  { href: '/study-visa/guide', label: 'Study' },
+  { href: '/permanent-residence/guide', label: 'Permanent Residence' },
+  { href: '/guide', label: 'Citizenship' },
+];
+
 export function Header() {
   return (
     <header
@@ -11,27 +19,23 @@ export function Header() {
       className='sticky top-0 z-50'
     >
       <div className='container-page flex items-center justify-between h-16'>
-        <Link href='/' className='flex items-center no-underline group'>
+        <Link href='/' className='flex items-center no-underline group shrink-0'>
           <Image
             src='/brand/visa-pathway-logo.png'
             alt='Visa Pathway'
             height={22}
             width={120}
-            style={{ objectFit: 'contain', objectPosition: 'left' }}
+            style={{ objectFit: 'contain', objectPosition: 'left', width: 'auto' }}
             priority
           />
         </Link>
 
-        <nav className='hidden md:flex items-center gap-6'>
-          {[
-            { href: '/guide', label: 'Guide' },
-            { href: '/checklist', label: 'Checklist' },
-            { href: '/apply', label: 'Apply' },
-          ].map(({ href, label }) => (
+        <nav className='hidden lg:flex items-center gap-5 mx-6'>
+          {NAV_LINKS.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className='text-sm font-medium no-underline transition-colors'
+              className='text-sm font-medium no-underline transition-colors whitespace-nowrap'
               style={{ color: 'var(--text-secondary)' }}
             >
               {label}
@@ -40,8 +44,8 @@ export function Header() {
         </nav>
 
         <Link
-          href='/apply'
-          className='no-underline'
+          href='/'
+          className='no-underline shrink-0'
           style={{
             backgroundColor: 'var(--amber)',
             color: 'var(--background)',
@@ -49,10 +53,9 @@ export function Header() {
             borderRadius: 8,
             fontSize: '0.875rem',
             fontWeight: 600,
-            transition: 'background-color 0.15s ease',
           }}
         >
-          Get Started
+          All Pathways
         </Link>
       </div>
     </header>

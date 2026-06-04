@@ -17,17 +17,139 @@ import {
   APPLICATION_FORMS,
   ELIGIBILITY_CRITERIA,
   FEES_SUMMARY,
+  type DocumentLocation,
 } from '@/lib/citizenship-data';
 import LinkifyText from '@/lib/linkify';
 import type { Metadata } from 'next';
+import { NationalitySelector } from '@/components/guide/nationality-selector';
+import {
+  getNationality,
+  DUAL_CITIZENSHIP_STATUS_LABELS,
+  type NationalityData,
+} from '@/lib/nationality-data';
+import { COUNTRIES } from '@/lib/countries';
 
 export const metadata: Metadata = {
-  title: 'Step-by-Step Guide',
+  title: 'Citizenship by Naturalisation Guide',
   description:
-    'Complete guide to South African citizenship by naturalisation. Every document, cost, location, and form you need.',
+    'Complete guide to South African citizenship by naturalisation — eligibility criteria, required documents, DHA forms, costs, and where to submit your application.',
+  keywords: [
+    'South African citizenship by naturalisation',
+    'how to apply for South African citizenship',
+    'citizenship naturalisation requirements',
+    'DHA citizenship application',
+    'South African Citizenship Act',
+    'permanent resident citizenship',
+    'BI-9 form',
+    'DHA-529',
+  ],
+  openGraph: {
+    title: 'Citizenship by Naturalisation Guide — South Africa',
+    description:
+      'Complete guide to South African citizenship by naturalisation — eligibility, documents, DHA forms, costs, and submission.',
+    url: '/guide',
+    type: 'article',
+  },
+  twitter: {
+    title: 'Citizenship by Naturalisation Guide — South Africa',
+    description:
+      'Complete guide to South African citizenship by naturalisation — eligibility, documents, DHA forms, costs, and submission.',
+  },
 };
 
-export default function GuidePage() {
+// Returns nationality-specific "where to get it" locations for the 3 documents
+// that depend on your home country. Returns null for all other documents or
+// when no nationality / Zimbabwe is selected (Zimbabwe is already covered
+// in the hardcoded data).
+function nationalityLocations(
+  docId: string,
+  nationality: NationalityData | null,
+): DocumentLocation[] | null {
+  if (!nationality || nationality.code === 'ZW') return null;
+
+  const natDependentDocs = [
+    'birth-certificate',
+    'home-country-police-clearance',
+    'dual-citizenship-letter',
+  ];
+  if (!natDependentDocs.includes(docId)) return null;
+
+  const noteByDoc: Record<string, string> = {
+    'birth-certificate': `Contact the ${nationality.name} Embassy or High Commission for guidance on obtaining your unabridged birth certificate.`,
+    'home-country-police-clearance': `Contact the ${nationality.name} Embassy or High Commission for guidance on obtaining a police clearance certificate.`,
+    'dual-citizenship-letter': `Contact the ${nationality.name} Embassy or High Commission to request the official letter confirming their dual citizenship position — DHA requires this letter regardless of whether dual citizenship is permitted or not.`,
+  };
+
+  const locations: DocumentLocation[] = [];
+
+  if (nationality.embassy) {
+    locations.push({
+      name: nationality.embassy.name,
+      address: nationality.embassy.address,
+      city: nationality.embassy.city,
+      phone: nationality.embassy.phone,
+      email: nationality.embassy.email,
+      website: nationality.embassy.website,
+      hours: nationality.embassy.hours,
+      notes: noteByDoc[docId],
+    });
+  } else {
+    locations.push({
+      name: `${nationality.name} Embassy or High Commission in South Africa`,
+      notes: `${noteByDoc[docId]} Use the DIRCO link below to find their contact details.`,
+    });
+  }
+
+  locations.push({
+    name: 'Find your embassy in South Africa',
+    website: 'https://dirco.gov.za/foreign-representation-in-south-africa/',
+    notes:
+      'Full directory of all foreign missions in South Africa — DIRCO website.',
+  });
+
+  return locations;
+}
+
+export default async function GuidePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ nationality?: string }>;
+}) {
+  const { nationality: nationalityCode } = await searchParams;
+  const nationalityData = nationalityCode
+    ? (getNationality(nationalityCode) ?? null)
+    : null;
+
+  // For countries not in our 33, synthesise a generic NationalityData so the
+  // guide still personalises (embassy referral + unknown dual-citizenship status).
+  const effectiveNationality: NationalityData | null = nationalityData ?? (() => {
+    if (!nationalityCode) return null;
+    const country = COUNTRIES.find((c) => c.iso2 === nationalityCode);
+    if (!country) return null;
+    return {
+      code: nationalityCode,
+      name: country.name,
+      dualCitizenshipStatus: 'unknown' as const,
+      dualCitizenshipNote: `We don't have specific dual citizenship information for ${country.name}. Contact your country's Embassy or High Commission in South Africa for guidance on their dual citizenship position — you'll need an official letter from them for your DHA application regardless of the answer.`,
+    };
+  })();
+
+  // Fees row for dual citizenship letter is nationality-specific
+  const fees = FEES_SUMMARY.map((fee) => {
+    if (
+      fee.item === 'Zimbabwe Citizenship Confirmation Letter' &&
+      effectiveNationality &&
+      effectiveNationality.code !== 'ZW'
+    ) {
+      return {
+        item: 'Dual Citizenship Confirmation Letter',
+        amount: 'Varies',
+        notes: `Contact the ${effectiveNationality.name} Embassy or High Commission — fees vary by embassy`,
+      };
+    }
+    return fee;
+  });
+
   return (
     <>
       {/* Page header */}
@@ -78,7 +200,7 @@ export default function GuidePage() {
             borderRadius: 12,
             padding: '20px 24px',
           }}
-          className='mb-12'
+          className='mb-6'
         >
           <p className='label-caps mb-4' style={{ color: 'var(--text-muted)' }}>
             Jump to section
@@ -108,6 +230,9 @@ export default function GuidePage() {
             ))}
           </div>
         </nav>
+
+        {/* Nationality selector */}
+        <NationalitySelector current={effectiveNationality} />
 
         {/* Eligibility */}
         <section id='eligibility' className='mb-16 scroll-mt-24'>
@@ -140,54 +265,83 @@ export default function GuidePage() {
           </p>
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {ELIGIBILITY_CRITERIA.map((criterion) => (
-              <div
-                key={criterion.id}
-                style={{
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 12,
-                  padding: '20px 24px',
-                }}
-              >
-                <div className='flex items-start gap-3 mb-3'>
-                  <CheckCircle
-                    size={18}
-                    style={{
-                      color: 'var(--green)',
-                      marginTop: 2,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <h3
-                    className='font-semibold text-base m-0'
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    {criterion.title}
-                  </h3>
-                </div>
-                <p
-                  className='text-sm leading-relaxed m-0 mb-3'
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {criterion.description}
-                </p>
+            {ELIGIBILITY_CRITERIA.map((criterion) => {
+              const isDualCit = criterion.id === 'dual-citizenship';
+              const tipText =
+                isDualCit && effectiveNationality
+                  ? effectiveNationality.dualCitizenshipNote
+                  : criterion.tip;
+              const statusMeta =
+                isDualCit && effectiveNationality
+                  ? DUAL_CITIZENSHIP_STATUS_LABELS[
+                      effectiveNationality.dualCitizenshipStatus
+                    ]
+                  : null;
+
+              return (
                 <div
+                  key={criterion.id}
                   style={{
-                    backgroundColor: 'var(--amber-subtle)',
-                    borderRadius: 8,
-                    padding: '10px 14px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 12,
+                    padding: '20px 24px',
                   }}
                 >
+                  <div className='flex items-start gap-3 mb-3'>
+                    <CheckCircle
+                      size={18}
+                      style={{
+                        color: 'var(--green)',
+                        marginTop: 2,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <h3
+                      className='font-semibold text-base m-0'
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      {criterion.title}
+                    </h3>
+                  </div>
                   <p
-                    className='text-xs m-0'
-                    style={{ color: 'var(--amber-dark)' }}
+                    className='text-sm leading-relaxed m-0 mb-3'
+                    style={{ color: 'var(--text-secondary)' }}
                   >
-                    <strong>Tip:</strong> {criterion.tip}
+                    {criterion.description}
                   </p>
+                  <div
+                    style={{
+                      backgroundColor: statusMeta
+                        ? statusMeta.bg
+                        : 'var(--amber-subtle)',
+                      borderRadius: 8,
+                      padding: '10px 14px',
+                    }}
+                  >
+                    {statusMeta && (
+                      <p
+                        className='text-xs font-semibold m-0 mb-1'
+                        style={{ color: statusMeta.colour }}
+                      >
+                        {statusMeta.label}
+                      </p>
+                    )}
+                    <p
+                      className='text-xs m-0'
+                      style={{
+                        color: statusMeta
+                          ? statusMeta.colour
+                          : 'var(--amber-dark)',
+                      }}
+                    >
+                      {!statusMeta && <strong>Tip: </strong>}
+                      {tipText}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -238,102 +392,77 @@ export default function GuidePage() {
           </div>
 
           <div className='space-y-6'>
-            {REQUIRED_DOCUMENTS.map((doc, index) => (
-              <div
-                key={doc.id}
-                style={{
-                  backgroundColor: 'var(--background)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 14,
-                  overflow: 'hidden',
-                }}
-              >
-                {/* Document header */}
+            {REQUIRED_DOCUMENTS.map((doc, index) => {
+              const locations =
+                nationalityLocations(doc.id, effectiveNationality) ?? doc.where;
+
+              return (
                 <div
+                  key={doc.id}
                   style={{
-                    padding: '20px 24px 16px',
-                    borderBottom: '1px solid var(--border-subtle)',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 14,
+                    overflow: 'hidden',
                   }}
                 >
-                  <div className='flex items-start justify-between gap-4 mb-2'>
-                    <div className='flex items-start gap-3'>
-                      <span
-                        className='label-caps tabular-nums'
-                        style={{
-                          color: 'var(--amber-dark)',
-                          backgroundColor: 'var(--amber-subtle)',
-                          padding: '3px 8px',
-                          borderRadius: 4,
-                          marginTop: 2,
-                        }}
-                      >
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <div>
-                        <h3
-                          className='font-semibold text-base'
+                  {/* Document header */}
+                  <div
+                    style={{
+                      padding: '20px 24px 16px',
+                      borderBottom: '1px solid var(--border-subtle)',
+                    }}
+                  >
+                    <div className='flex items-start justify-between gap-4 mb-2'>
+                      <div className='flex items-start gap-3'>
+                        <span
+                          className='label-caps tabular-nums'
                           style={{
-                            color: 'var(--text-primary)',
-                            marginBottom: 2,
+                            color: 'var(--amber-dark)',
+                            backgroundColor: 'var(--amber-subtle)',
+                            padding: '3px 8px',
+                            borderRadius: 4,
+                            marginTop: 2,
                           }}
                         >
-                          {doc.title}
-                          {doc.optional && (
-                            <span
-                              className='text-xs font-normal ml-2'
-                              style={{
-                                color: 'var(--text-muted)',
-                                backgroundColor: 'var(--surface-2)',
-                                padding: '2px 8px',
-                                borderRadius: 4,
-                              }}
-                            >
-                              {doc.conditionalOn}
-                            </span>
-                          )}
-                        </h3>
-                        <p
-                          className='text-sm m-0'
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          {doc.description}
-                        </p>
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <div>
+                          <h3
+                            className='font-semibold text-base'
+                            style={{
+                              color: 'var(--text-primary)',
+                              marginBottom: 2,
+                            }}
+                          >
+                            {doc.title}
+                            {doc.optional && (
+                              <span
+                                className='text-xs font-normal ml-2'
+                                style={{
+                                  color: 'var(--text-muted)',
+                                  backgroundColor: 'var(--surface-2)',
+                                  padding: '2px 8px',
+                                  borderRadius: 4,
+                                }}
+                              >
+                                {doc.conditionalOn}
+                              </span>
+                            )}
+                          </h3>
+                          <p
+                            className='text-sm m-0'
+                            style={{ color: 'var(--text-secondary)' }}
+                          >
+                            {doc.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className='flex flex-wrap gap-4 mt-4'>
-                    <div className='flex items-center gap-2'>
-                      <FileText
-                        size={14}
-                        style={{ color: 'var(--text-muted)' }}
-                      />
-                      <span
-                        className='text-sm'
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        {doc.copies}
-                      </span>
-                    </div>
-                    {doc.cost && (
+                    <div className='flex flex-wrap gap-4 mt-4'>
                       <div className='flex items-center gap-2'>
-                        <span
-                          className='label-caps'
-                          style={{ color: 'var(--green-dark)' }}
-                        >
-                          Cost:
-                        </span>
-                        <span
-                          className='text-sm font-semibold'
-                          style={{ color: 'var(--green-dark)' }}
-                        >
-                          {doc.cost}
-                        </span>
-                      </div>
-                    )}
-                    {doc.validity && (
-                      <div className='flex items-center gap-2'>
-                        <Clock
+                        <FileText
                           size={14}
                           style={{ color: 'var(--text-muted)' }}
                         />
@@ -341,172 +470,202 @@ export default function GuidePage() {
                           className='text-sm'
                           style={{ color: 'var(--text-secondary)' }}
                         >
-                          Valid for: {doc.validity}
+                          {doc.copies}
                         </span>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Locations */}
-                <div
-                  style={{
-                    padding: '16px 24px',
-                    backgroundColor: 'var(--surface)',
-                  }}
-                >
-                  <p
-                    className='label-caps mb-3'
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    Where to get it
-                  </p>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                    {doc.where.map((location) => (
-                      <div
-                        key={location.name}
-                        style={{
-                          backgroundColor: 'var(--background)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 10,
-                          padding: '14px 16px',
-                        }}
-                      >
-                        <p
-                          className='font-semibold text-sm mb-2'
-                          style={{ color: 'var(--text-primary)' }}
-                        >
-                          {location.name}
-                        </p>
-                        {location.address && (
-                          <div className='flex items-start gap-2 mb-1'>
-                            <MapPin
-                              size={12}
-                              style={{
-                                color: 'var(--text-muted)',
-                                marginTop: 2,
-                                flexShrink: 0,
-                              }}
-                            />
-                            <span
-                              className='text-xs'
-                              style={{ color: 'var(--text-secondary)' }}
-                            >
-                              {location.address}
-                              {location.city && `, ${location.city}`}
-                            </span>
-                          </div>
-                        )}
-                        {location.phone && (
-                          <div className='flex items-center gap-2 mb-1'>
-                            <Phone
-                              size={12}
-                              style={{ color: 'var(--text-muted)' }}
-                            />
-                            <a
-                              href={`tel:${location.phone}`}
-                              className='text-xs no-underline hover:underline'
-                              style={{ color: 'var(--amber-dark)' }}
-                            >
-                              {location.phone}
-                            </a>
-                          </div>
-                        )}
-                        {location.email && (
-                          <div className='flex items-center gap-2 mb-1'>
-                            <Mail
-                              size={12}
-                              style={{ color: 'var(--text-muted)' }}
-                            />
-                            <a
-                              href={`mailto:${location.email}`}
-                              className='text-xs no-underline hover:underline'
-                              style={{ color: 'var(--amber-dark)' }}
-                            >
-                              {location.email}
-                            </a>
-                          </div>
-                        )}
-                        {location.website && (
-                          <div className='flex items-center gap-2 mb-1'>
-                            <Globe
-                              size={12}
-                              style={{ color: 'var(--text-muted)' }}
-                            />
-                            <a
-                              href={location.website}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='text-xs no-underline hover:underline'
-                              style={{ color: 'var(--amber-dark)' }}
-                            >
-                              Visit website ↗
-                            </a>
-                          </div>
-                        )}
-                        {location.hours && (
-                          <div className='flex items-center gap-2 mb-1'>
-                            <Clock
-                              size={12}
-                              style={{ color: 'var(--text-muted)' }}
-                            />
-                            <span
-                              className='text-xs'
-                              style={{ color: 'var(--text-muted)' }}
-                            >
-                              {location.hours}
-                            </span>
-                          </div>
-                        )}
-                        {location.notes && (
-                          <p
-                            className='text-xs mt-2 m-0'
-                            style={{
-                              color: 'var(--text-muted)',
-                              lineHeight: 1.5,
-                            }}
+                      {doc.cost && (
+                        <div className='flex items-center gap-2'>
+                          <span
+                            className='label-caps'
+                            style={{ color: 'var(--green-dark)' }}
                           >
-                            <LinkifyText text={location.notes} />
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tips */}
-                {doc.tips.length > 0 && (
-                  <div style={{ padding: '14px 24px 18px' }}>
-                    <p
-                      className='label-caps mb-3'
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      Tips
-                    </p>
-                    <ul className='space-y-2 list-none m-0 p-0'>
-                      {doc.tips.map((tip) => (
-                        <li key={tip} className='flex items-start gap-2'>
-                          <ArrowRight
-                            size={12}
-                            style={{
-                              color: 'var(--amber)',
-                              marginTop: 4,
-                              flexShrink: 0,
-                            }}
+                            Cost:
+                          </span>
+                          <span
+                            className='text-sm font-semibold'
+                            style={{ color: 'var(--green-dark)' }}
+                          >
+                            {doc.cost}
+                          </span>
+                        </div>
+                      )}
+                      {doc.validity && (
+                        <div className='flex items-center gap-2'>
+                          <Clock
+                            size={14}
+                            style={{ color: 'var(--text-muted)' }}
                           />
                           <span
                             className='text-sm'
                             style={{ color: 'var(--text-secondary)' }}
                           >
-                            <LinkifyText text={tip} />
+                            Valid for: {doc.validity}
                           </span>
-                        </li>
-                      ))}
-                    </ul>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {/* Locations */}
+                  <div
+                    style={{
+                      padding: '16px 24px',
+                      backgroundColor: 'var(--surface)',
+                    }}
+                  >
+                    <p
+                      className='label-caps mb-3'
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      Where to get it
+                    </p>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                      {locations.map((location) => (
+                        <div
+                          key={location.name}
+                          style={{
+                            backgroundColor: 'var(--background)',
+                            border: '1px solid var(--border)',
+                            borderRadius: 10,
+                            padding: '14px 16px',
+                          }}
+                        >
+                          <p
+                            className='font-semibold text-sm mb-2'
+                            style={{ color: 'var(--text-primary)' }}
+                          >
+                            {location.name}
+                          </p>
+                          {location.address && (
+                            <div className='flex items-start gap-2 mb-1'>
+                              <MapPin
+                                size={12}
+                                style={{
+                                  color: 'var(--text-muted)',
+                                  marginTop: 2,
+                                  flexShrink: 0,
+                                }}
+                              />
+                              <span
+                                className='text-xs'
+                                style={{ color: 'var(--text-secondary)' }}
+                              >
+                                {location.address}
+                                {location.city && `, ${location.city}`}
+                              </span>
+                            </div>
+                          )}
+                          {location.phone && (
+                            <div className='flex items-center gap-2 mb-1'>
+                              <Phone
+                                size={12}
+                                style={{ color: 'var(--text-muted)' }}
+                              />
+                              <a
+                                href={`tel:${location.phone}`}
+                                className='text-xs no-underline hover:underline'
+                                style={{ color: 'var(--amber-dark)' }}
+                              >
+                                {location.phone}
+                              </a>
+                            </div>
+                          )}
+                          {location.email && (
+                            <div className='flex items-center gap-2 mb-1'>
+                              <Mail
+                                size={12}
+                                style={{ color: 'var(--text-muted)' }}
+                              />
+                              <a
+                                href={`mailto:${location.email}`}
+                                className='text-xs no-underline hover:underline'
+                                style={{ color: 'var(--amber-dark)' }}
+                              >
+                                {location.email}
+                              </a>
+                            </div>
+                          )}
+                          {location.website && (
+                            <div className='flex items-center gap-2 mb-1'>
+                              <Globe
+                                size={12}
+                                style={{ color: 'var(--text-muted)' }}
+                              />
+                              <a
+                                href={location.website}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='text-xs no-underline hover:underline'
+                                style={{ color: 'var(--amber-dark)' }}
+                              >
+                                Visit website ↗
+                              </a>
+                            </div>
+                          )}
+                          {location.hours && (
+                            <div className='flex items-center gap-2 mb-1'>
+                              <Clock
+                                size={12}
+                                style={{ color: 'var(--text-muted)' }}
+                              />
+                              <span
+                                className='text-xs'
+                                style={{ color: 'var(--text-muted)' }}
+                              >
+                                {location.hours}
+                              </span>
+                            </div>
+                          )}
+                          {location.notes && (
+                            <p
+                              className='text-xs mt-2 m-0'
+                              style={{
+                                color: 'var(--text-muted)',
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              <LinkifyText text={location.notes} />
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tips */}
+                  {doc.tips.length > 0 && (
+                    <div style={{ padding: '14px 24px 18px' }}>
+                      <p
+                        className='label-caps mb-3'
+                        style={{ color: 'var(--text-muted)' }}
+                      >
+                        Tips
+                      </p>
+                      <ul className='space-y-2 list-none m-0 p-0'>
+                        {doc.tips.map((tip) => (
+                          <li key={tip} className='flex items-start gap-2'>
+                            <ArrowRight
+                              size={12}
+                              style={{
+                                color: 'var(--amber)',
+                                marginTop: 4,
+                                flexShrink: 0,
+                              }}
+                            />
+                            <span
+                              className='text-sm'
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              <LinkifyText text={tip} />
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -823,7 +982,7 @@ export default function GuidePage() {
                 </tr>
               </thead>
               <tbody>
-                {FEES_SUMMARY.map((fee, i) => (
+                {fees.map((fee, i) => (
                   <tr
                     key={fee.item}
                     style={{

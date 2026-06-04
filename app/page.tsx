@@ -1,34 +1,112 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle, MapPin, Clock, Shield } from 'lucide-react';
-import { APPLICATION_PHASES, FEES_SUMMARY } from '@/lib/citizenship-data';
+import { ArrowRight, CheckCircle, Clock, Shield } from 'lucide-react';
+import type { Metadata } from 'next';
+import { SITE_URL, SITE_NAME } from '@/lib/site-config';
+
+export const metadata: Metadata = {
+  openGraph: {
+    url: SITE_URL,
+    type: 'website',
+  },
+};
+
+const PATHWAYS = [
+  {
+    slug: 'critical-skills',
+    name: 'Critical Skills Work Visa',
+    tagline: 'For qualified professionals in high-demand occupations',
+    legalBasis: 'Section 19(2)',
+    processingTime: '4–8 weeks',
+    validity: '5 years',
+    icon: '🔬',
+  },
+  {
+    slug: 'general-work',
+    name: 'General Work Visa',
+    tagline: 'Employment-tied permit requiring a confirmed SA job offer',
+    legalBasis: 'Section 19(1)',
+    processingTime: '4–8 weeks',
+    validity: 'Up to 3 years',
+    icon: '💼',
+  },
+  {
+    slug: 'business-visa',
+    name: 'Business Visa',
+    tagline: 'For entrepreneurs establishing or investing in a SA business',
+    legalBasis: 'Section 15',
+    processingTime: '4–8 weeks',
+    validity: '3 years',
+    icon: '🏢',
+  },
+  {
+    slug: 'study-visa',
+    name: 'Study Visa',
+    tagline: 'For students enrolled at accredited South African institutions',
+    legalBasis: 'Section 18',
+    processingTime: '4–8 weeks',
+    validity: 'Duration of course',
+    icon: '🎓',
+  },
+  {
+    slug: 'permanent-residence',
+    name: 'Permanent Residence',
+    tagline: 'Make South Africa your permanent home — no expiry, no renewals',
+    legalBasis: 'Sections 26 & 27',
+    processingTime: '12–24 months',
+    validity: 'Permanent',
+    icon: '🏡',
+  },
+  {
+    slug: 'guide',
+    name: 'Citizenship by Naturalisation',
+    tagline: 'Become a South African citizen after 5+ years of permanent residence',
+    legalBasis: 'South African Citizenship Act',
+    processingTime: '12–24 months',
+    validity: 'Permanent citizenship',
+    icon: '🇿🇦',
+  },
+];
 
 export default function HomePage() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    description:
+      'Clear, verified guides for South African visas, permits, and citizenship. Critical Skills, General Work, Business, Study, Permanent Residence, and Citizenship by Naturalisation.',
+  };
+
   return (
     <>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero */}
       <section className='container-page pt-20 pb-16 md:pt-28 md:pb-24'>
-        <div className='max-w-[680px]'>
+        <div className='max-w-170'>
           <p className='label-caps mb-5' style={{ color: 'var(--amber-dark)' }}>
-            South African Citizenship by Naturalisation
+            South African Immigration Guides
           </p>
           <h1
             className='heading-display text-4xl md:text-5xl lg:text-[3.5rem] mb-6 text-balance'
             style={{ color: 'var(--text-primary)' }}
           >
-            Everything you need to become a South African citizen.
+            Navigate South Africa's visa and permit pathways.
           </h1>
           <p
             className='text-lg md:text-xl leading-relaxed mb-10'
             style={{ color: 'var(--text-secondary)', maxWidth: '58ch' }}
           >
-            We&apos;ve done the research. This guide gives you every document,
-            every cost, every address, and every form — so you can focus on the
-            process, not the paperwork chase.
+            We&apos;ve researched every pathway — documents, costs, locations,
+            and processes — so you can apply with confidence. Based on the
+            Immigration Act and current DHA requirements.
           </p>
 
           <div className='flex flex-wrap gap-4'>
-            <Link
-              href='/guide'
+            <a
+              href='#pathways'
               className='no-underline inline-flex items-center gap-2 font-semibold'
               style={{
                 backgroundColor: 'var(--amber)',
@@ -38,10 +116,10 @@ export default function HomePage() {
                 fontSize: '0.9375rem',
               }}
             >
-              Read the guide <ArrowRight size={16} />
-            </Link>
+              Explore pathways <ArrowRight size={16} />
+            </a>
             <Link
-              href='/checklist'
+              href='/guide'
               className='no-underline inline-flex items-center gap-2 font-semibold'
               style={{
                 backgroundColor: 'var(--surface)',
@@ -52,7 +130,7 @@ export default function HomePage() {
                 border: '1px solid var(--border)',
               }}
             >
-              Start checklist
+              Citizenship guide
             </Link>
           </div>
         </div>
@@ -63,9 +141,9 @@ export default function HomePage() {
           style={{ borderTop: '1px solid var(--border)' }}
         >
           {[
-            { icon: CheckCircle, text: 'Based on DHA official requirements' },
-            { icon: MapPin, text: 'Nationwide locations & addresses' },
-            { icon: Clock, text: 'Real processing times & costs' },
+            { icon: CheckCircle, text: 'Based on the Immigration Act & DHA requirements' },
+            { icon: Shield, text: 'Sources cited throughout' },
+            { icon: Clock, text: 'Real processing times & current costs' },
           ].map(({ icon: Icon, text }) => (
             <div key={text} className='flex items-center gap-2'>
               <Icon size={16} style={{ color: 'var(--green)' }} />
@@ -77,148 +155,167 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* Pathways */}
       <section
+        id='pathways'
         style={{ backgroundColor: 'var(--surface)' }}
-        className='py-16 md:py-20'
+        className='py-16 md:py-20 scroll-mt-16'
       >
         <div className='container-page'>
           <p className='label-caps mb-2' style={{ color: 'var(--text-muted)' }}>
-            The process
+            Choose your pathway
           </p>
           <h2
-            className='heading-section text-2xl md:text-3xl mb-12'
+            className='heading-section text-2xl md:text-3xl mb-4'
             style={{ color: 'var(--text-primary)' }}
           >
-            Six phases, clearly explained.
+            Which visa or permit do you need?
           </h2>
+          <p
+            className='text-base mb-12'
+            style={{ color: 'var(--text-secondary)', maxWidth: '52ch' }}
+          >
+            Each pathway has its own eligibility criteria, document requirements, and process. Select yours below for a complete guide.
+          </p>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {APPLICATION_PHASES.map((phase) => (
-              <div
-                key={phase.id}
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+            {PATHWAYS.map((pathway) => (
+              <Link
+                key={pathway.slug}
+                href={`/${pathway.slug}`}
+                className='no-underline group block'
                 style={{
                   backgroundColor: 'var(--background)',
                   border: '1px solid var(--border)',
-                  borderRadius: 12,
+                  borderRadius: 14,
                   padding: '24px',
+                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
                 }}
               >
-                <div className='flex items-start gap-4 mb-3'>
-                  <span
-                    className='heading-display text-4xl tabular-nums leading-none'
-                    style={{ color: 'var(--amber-light)', lineHeight: 1 }}
-                  >
-                    {String(phase.number).padStart(2, '0')}
-                  </span>
+                <div className='mb-4'>
+                  <span style={{ fontSize: '1.75rem', lineHeight: 1 }}>{pathway.icon}</span>
+                </div>
+
+                <p
+                  className='font-semibold text-base mb-1'
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  {pathway.name}
+                </p>
+                <p
+                  className='text-sm mb-5'
+                  style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}
+                >
+                  {pathway.tagline}
+                </p>
+
+                <div
+                  className='flex flex-wrap gap-x-4 gap-y-2 mb-5'
+                  style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 14 }}
+                >
                   <div>
-                    <p
-                      className='font-semibold text-sm mb-1'
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {phase.title}
+                    <p className='label-caps mb-0.5' style={{ color: 'var(--text-muted)' }}>
+                      Processing
                     </p>
-                    <span
-                      className='label-caps'
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      {phase.estimatedTime}
-                    </span>
+                    <p className='text-xs font-medium' style={{ color: 'var(--text-secondary)' }}>
+                      {pathway.processingTime}
+                    </p>
+                  </div>
+                  <div>
+                    <p className='label-caps mb-0.5' style={{ color: 'var(--text-muted)' }}>
+                      Validity
+                    </p>
+                    <p className='text-xs font-medium' style={{ color: 'var(--text-secondary)' }}>
+                      {pathway.validity}
+                    </p>
+                  </div>
+                  <div>
+                    <p className='label-caps mb-0.5' style={{ color: 'var(--text-muted)' }}>
+                      Legal basis
+                    </p>
+                    <p className='text-xs font-medium' style={{ color: 'var(--text-secondary)' }}>
+                      {pathway.legalBasis}
+                    </p>
                   </div>
                 </div>
-                <p
-                  className='text-sm leading-relaxed m-0'
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {phase.summary.slice(0, 120)}
-                  {phase.summary.length > 120 ? '…' : ''}
-                </p>
-              </div>
-            ))}
-          </div>
 
-          <div className='mt-8 text-center'>
-            <Link
-              href='/guide'
-              className='no-underline inline-flex items-center gap-2 font-medium text-sm'
-              style={{ color: 'var(--amber-dark)' }}
-            >
-              Read the full guide with all document details{' '}
-              <ArrowRight size={14} />
-            </Link>
+                <div
+                  className='flex items-center gap-2 text-sm font-semibold'
+                  style={{ color: 'var(--amber-dark)' }}
+                >
+                  Read the guide <ArrowRight size={14} />
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* What you'll need */}
+      {/* What our guides cover */}
       <section className='container-page py-16 md:py-24'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-16 items-start'>
           <div>
-            <p
-              className='label-caps mb-2'
-              style={{ color: 'var(--text-muted)' }}
-            >
-              Documents
+            <p className='label-caps mb-2' style={{ color: 'var(--text-muted)' }}>
+              What you get
             </p>
             <h2
               className='heading-section text-2xl md:text-3xl mb-4'
               style={{ color: 'var(--text-primary)' }}
             >
-              Know before you gather.
+              Every guide includes the same depth.
             </h2>
             <p
               className='text-base leading-relaxed mb-8'
               style={{ color: 'var(--text-secondary)', maxWidth: '48ch' }}
             >
-              The citizenship application requires approximately 10–12
-              documents. Many take weeks to obtain — especially police
-              clearances and foreign documents. Start early.
+              We don&apos;t write generic overviews. Each pathway guide gives you the complete picture — verifiable, specific, and actionable.
             </p>
 
-            <div className='space-y-3'>
+            <div className='space-y-4'>
               {[
-                'SA Police Clearance Certificate (allow 4–8 weeks)',
-                'Police clearance from your home country',
-                'Dual citizenship confirmation from your embassy',
-                'Unabridged birth certificate',
-                'All foreign passports with entry/exit stamps',
-                '12 months proof of continuous SA residence',
-                '4 completed DHA application forms',
+                {
+                  title: 'Full document checklists',
+                  body: 'Every document required, with certified copy counts, validity periods, and where to obtain each one.',
+                },
+                {
+                  title: 'Exact costs in ZAR',
+                  body: 'VFS Global fees, DHA fees, medical costs, SAQA evaluation fees — all itemised with current amounts.',
+                },
+                {
+                  title: 'Where to get each document',
+                  body: 'Physical addresses, phone numbers, websites, and hours of operation for every relevant authority.',
+                },
+                {
+                  title: 'Realistic timelines',
+                  body: 'Honest processing estimates based on DHA backlogs — not optimistic government website figures.',
+                },
+                {
+                  title: 'Legal basis cited',
+                  body: 'Every guide references the exact section of the Immigration Act and relevant regulations.',
+                },
               ].map((item) => (
-                <div key={item} className='flex items-start gap-3'>
-                  <div
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      backgroundColor: 'var(--amber)',
-                      marginTop: 7,
-                      flexShrink: 0,
-                    }}
+                <div key={item.title} className='flex items-start gap-3'>
+                  <CheckCircle
+                    size={16}
+                    style={{ color: 'var(--green)', marginTop: 3, flexShrink: 0 }}
                   />
-                  <p
-                    className='text-sm m-0'
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    {item}
-                  </p>
+                  <div>
+                    <p
+                      className='text-sm font-semibold m-0'
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      {item.title}
+                    </p>
+                    <p className='text-sm m-0' style={{ color: 'var(--text-secondary)' }}>
+                      {item.body}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
-
-            <Link
-              href='/checklist'
-              className='no-underline inline-flex items-center gap-2 font-semibold mt-8'
-              style={{
-                color: 'var(--green-dark)',
-                fontSize: '0.875rem',
-              }}
-            >
-              See the complete checklist with locations <ArrowRight size={14} />
-            </Link>
           </div>
 
-          {/* Cost summary */}
+          {/* Interactive checklist feature */}
           <div
             style={{
               backgroundColor: 'var(--surface)',
@@ -227,56 +324,70 @@ export default function HomePage() {
               padding: '28px',
             }}
           >
-            <div className='flex items-center gap-2 mb-6'>
-              <Shield size={16} style={{ color: 'var(--green)' }} />
-              <p
-                className='label-caps m-0'
-                style={{ color: 'var(--text-muted)' }}
-              >
-                Estimated costs
-              </p>
-            </div>
+            <p className='label-caps mb-4' style={{ color: 'var(--text-muted)' }}>
+              Interactive checklists
+            </p>
+            <p
+              className='heading-section text-xl mb-3'
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Track your documents as you go.
+            </p>
+            <p
+              className='text-sm leading-relaxed mb-6'
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Every guide comes with an interactive checklist. Tick off documents as you collect them — your progress is saved in your browser so you can pick up where you left off.
+            </p>
 
-            <div className='space-y-4'>
-              {FEES_SUMMARY.map((fee) => (
-                <div key={fee.item}>
-                  <div className='flex justify-between items-start gap-4 mb-1'>
-                    <span
-                      className='text-sm font-medium'
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {fee.item}
-                    </span>
-                    <span
-                      className='text-sm font-bold tabular-nums shrink-0'
-                      style={{ color: 'var(--amber-dark)' }}
-                    >
-                      {fee.amount}
-                    </span>
-                  </div>
+            <div className='space-y-3'>
+              {[
+                { label: 'Valid passport (all pages)', done: true },
+                { label: 'SAQA foreign qualification evaluation', done: true },
+                { label: 'Medical certificate (BI-811)', done: false },
+                { label: 'SA Police Clearance Certificate', done: false },
+                { label: 'Professional body registration', done: false },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className='flex items-center gap-3'
+                  style={{
+                    backgroundColor: 'var(--background)',
+                    border: `1px solid ${item.done ? 'var(--green-light)' : 'var(--border)'}`,
+                    borderRadius: 8,
+                    padding: '10px 14px',
+                    opacity: item.done ? 0.75 : 1,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: '50%',
+                      backgroundColor: item.done ? 'var(--green)' : 'var(--border)',
+                      flexShrink: 0,
+                    }}
+                  />
                   <p
-                    className='text-xs m-0'
-                    style={{ color: 'var(--text-muted)' }}
+                    className='text-sm m-0'
+                    style={{
+                      color: item.done ? 'var(--text-muted)' : 'var(--text-primary)',
+                      textDecoration: item.done ? 'line-through' : 'none',
+                    }}
                   >
-                    {fee.notes}
+                    {item.label}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div
-              style={{
-                borderTop: '1px solid var(--border)',
-                marginTop: 24,
-                paddingTop: 20,
-              }}
+            <Link
+              href='/critical-skills/checklist'
+              className='no-underline inline-flex items-center gap-2 font-semibold mt-6 text-sm'
+              style={{ color: 'var(--amber-dark)' }}
             >
-              <p className='text-xs m-0' style={{ color: 'var(--text-muted)' }}>
-                Total out-of-pocket costs vary. Budget approximately
-                R1,500–R2,500 for the full application. Fees exclude any
-                immigration consultant fees if you choose to use one.
-              </p>
-            </div>
+              Try the Critical Skills checklist <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </section>
@@ -293,24 +404,23 @@ export default function HomePage() {
             className='label-caps mb-4'
             style={{ color: 'oklch(75% 0.07 155)' }}
           >
-            Get started today
+            Applying for citizenship?
           </p>
           <h2
             className='heading-display text-3xl md:text-4xl mb-5 text-balance'
             style={{ color: 'oklch(97% 0.004 155)' }}
           >
-            Ready to start your application?
+            Already a permanent resident? We have the citizenship guide covered.
           </h2>
           <p
             className='text-base leading-relaxed mb-8 mx-auto'
             style={{ color: 'oklch(82% 0.05 155)', maxWidth: '44ch' }}
           >
-            Use our application assistant to enter your details once and
-            generate a pre-filled summary for all the DHA forms you need.
+            Our original and most detailed guide. Every document, every DHA office, every form — plus an application assistant to pre-fill your DHA forms.
           </p>
           <div className='flex flex-wrap gap-4 justify-center'>
             <Link
-              href='/apply'
+              href='/guide'
               className='no-underline inline-flex items-center gap-2 font-semibold'
               style={{
                 backgroundColor: 'var(--amber)',
@@ -320,10 +430,10 @@ export default function HomePage() {
                 fontSize: '0.9375rem',
               }}
             >
-              Start application assistant <ArrowRight size={16} />
+              Citizenship guide <ArrowRight size={16} />
             </Link>
             <Link
-              href='/guide'
+              href='/apply'
               className='no-underline inline-flex items-center gap-2 font-semibold'
               style={{
                 backgroundColor: 'transparent',
@@ -334,7 +444,7 @@ export default function HomePage() {
                 border: '1px solid oklch(65% 0.07 155)',
               }}
             >
-              Read the guide first
+              Application assistant
             </Link>
           </div>
         </div>
@@ -346,10 +456,7 @@ export default function HomePage() {
           className='text-xs text-center'
           style={{ color: 'var(--text-muted)' }}
         >
-          This guide is for informational purposes. Always verify current
-          requirements directly with the Department of Home Affairs.
-          Requirements, fees, and processing times change — confirm before
-          submitting your application.
+          This site is for informational purposes only and is not legal advice. Always verify current requirements directly with the Department of Home Affairs and VFS Global before submitting any application. Immigration requirements, fees, and processing times change — confirm before applying.
         </p>
       </section>
     </>
