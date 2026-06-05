@@ -77,7 +77,7 @@ export default function OGImage() {
             display: 'flex',
             backgroundColor: 'rgba(212,147,10,0.09)',
             borderRadius: '9999px',
-            padding: '8px 12px',
+            padding: '4px 16px 8px',
           }}
         >
           {/* Wide logo: 1914×991 → render at ~560×290 */}
