@@ -19,6 +19,7 @@ const PATHWAYS = [
     processingTime: '4–8 weeks',
     validity: '5 years',
     icon: '🔬',
+    checklistHref: '/critical-skills/checklist',
   },
   {
     slug: 'general-work',
@@ -28,6 +29,7 @@ const PATHWAYS = [
     processingTime: '4–8 weeks',
     validity: 'Up to 3 years',
     icon: '💼',
+    checklistHref: '/general-work/checklist',
   },
   {
     slug: 'business-visa',
@@ -37,6 +39,7 @@ const PATHWAYS = [
     processingTime: '4–8 weeks',
     validity: '3 years',
     icon: '🏢',
+    checklistHref: '/business-visa/checklist',
   },
   {
     slug: 'study-visa',
@@ -46,6 +49,7 @@ const PATHWAYS = [
     processingTime: '4–8 weeks',
     validity: 'Duration of course',
     icon: '🎓',
+    checklistHref: '/study-visa/checklist',
   },
   {
     slug: 'permanent-residence',
@@ -55,6 +59,7 @@ const PATHWAYS = [
     processingTime: '12–24 months',
     validity: 'Permanent',
     icon: '🏡',
+    checklistHref: '/permanent-residence/checklist',
   },
   {
     slug: 'guide',
@@ -64,6 +69,7 @@ const PATHWAYS = [
     processingTime: '12–24 months',
     validity: 'Permanent citizenship',
     icon: '🇿🇦',
+    checklistHref: '/checklist',
   },
 ];
 
@@ -180,16 +186,15 @@ export default function HomePage() {
 
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
             {PATHWAYS.map((pathway) => (
-              <Link
+              <div
                 key={pathway.slug}
-                href={`/${pathway.slug}`}
-                className='no-underline group block'
                 style={{
                   backgroundColor: 'var(--background)',
                   border: '1px solid var(--border)',
                   borderRadius: 14,
                   padding: '24px',
-                  transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
                 <div className='mb-4'>
@@ -240,12 +245,25 @@ export default function HomePage() {
                 </div>
 
                 <div
-                  className='flex items-center gap-2 text-sm font-semibold'
-                  style={{ color: 'var(--amber-dark)' }}
+                  className='flex items-center gap-4 mt-auto'
+                  style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 14 }}
                 >
-                  Read the guide <ArrowRight size={14} />
+                  <Link
+                    href={`/${pathway.slug}`}
+                    className='no-underline inline-flex items-center gap-1.5 text-sm font-semibold'
+                    style={{ color: 'var(--amber-dark)' }}
+                  >
+                    Read the guide <ArrowRight size={13} />
+                  </Link>
+                  <Link
+                    href={pathway.checklistHref}
+                    className='no-underline inline-flex items-center gap-1.5 text-sm font-medium'
+                    style={{ color: 'var(--green)' }}
+                  >
+                    Checklist
+                  </Link>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>

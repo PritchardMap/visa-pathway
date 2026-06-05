@@ -212,6 +212,7 @@ export default async function GuidePage({
               { href: '#forms', label: 'DHA Forms' },
               { href: '#submission', label: 'Submission' },
               { href: '#costs', label: 'Costs' },
+              { href: '/checklist', label: '✓ Checklist' },
             ].map(({ href, label }) => (
               <a
                 key={href}
@@ -1020,6 +1021,38 @@ export default async function GuidePage({
             </table>
           </div>
         </section>
+      </div>
+
+      {/* Checklist CTA */}
+      <div
+        style={{
+          borderTop: '1px solid var(--border)',
+          backgroundColor: 'var(--surface)',
+        }}
+      >
+        <div className='container-page py-10 flex flex-col sm:flex-row items-center justify-between gap-6'>
+          <div>
+            <p className='font-semibold' style={{ color: 'var(--text-primary)' }}>
+              Ready to check off every document?
+            </p>
+            <p className='text-sm m-0' style={{ color: 'var(--text-muted)' }}>
+              Use the interactive checklist to track your progress.
+            </p>
+          </div>
+          <Link
+            href='/checklist'
+            className='no-underline inline-flex items-center gap-2 font-semibold shrink-0'
+            style={{
+              backgroundColor: 'var(--amber)',
+              color: 'var(--background)',
+              padding: '12px 28px',
+              borderRadius: 10,
+              fontSize: '0.9375rem',
+            }}
+          >
+            Open Checklist <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
 
       {/* Bottom CTA */}
