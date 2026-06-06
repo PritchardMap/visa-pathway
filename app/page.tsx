@@ -91,53 +91,163 @@ export default function HomePage() {
       />
       {/* Hero */}
       <section className='container-page pt-20 pb-16 md:pt-28 md:pb-24'>
-        <div className='max-w-170'>
-          <p className='label-caps mb-5' style={{ color: 'var(--amber-dark)' }}>
-            South African Immigration Guides
-          </p>
-          <h1
-            className='heading-display text-4xl md:text-5xl lg:text-[3.5rem] mb-6 text-balance'
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Navigate South Africa's visa and permit pathways.
-          </h1>
-          <p
-            className='text-lg md:text-xl leading-relaxed mb-10'
-            style={{ color: 'var(--text-secondary)', maxWidth: '58ch' }}
-          >
-            We&apos;ve researched every pathway — documents, costs, locations,
-            and processes — so you can apply with confidence. Based on the
-            Immigration Act and current DHA requirements.
-          </p>
+        <div className='flex flex-col lg:flex-row lg:items-center gap-12 lg:gap-16'>
+          {/* Copy */}
+          <div className='flex-1 min-w-0'>
+            <p className='label-caps mb-5' style={{ color: 'var(--amber-dark)' }}>
+              South African Immigration Guides
+            </p>
+            <h1
+              className='heading-display text-4xl md:text-5xl lg:text-[3.5rem] mb-6 text-balance'
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Navigate South Africa's visa and permit pathways.
+            </h1>
+            <p
+              className='text-lg md:text-xl leading-relaxed mb-10'
+              style={{ color: 'var(--text-secondary)', maxWidth: '52ch' }}
+            >
+              We&apos;ve researched every pathway — documents, costs, locations,
+              and processes — so you can apply with confidence. Based on the
+              Immigration Act and current DHA requirements.
+            </p>
 
-          <div className='flex flex-wrap gap-4'>
-            <a
-              href='#pathways'
-              className='no-underline inline-flex items-center gap-2 font-semibold'
+            <div className='flex flex-wrap gap-4'>
+              <Link
+                href='/apply'
+                className='no-underline inline-flex items-center gap-2 font-semibold'
+                style={{
+                  backgroundColor: 'var(--amber)',
+                  color: 'var(--background)',
+                  padding: '12px 28px',
+                  borderRadius: 10,
+                  fontSize: '0.9375rem',
+                }}
+              >
+                Pre-fill your DHA forms <ArrowRight size={16} />
+              </Link>
+              <Link
+                href='/checklists'
+                className='no-underline inline-flex items-center gap-2 font-semibold'
+                style={{
+                  backgroundColor: 'var(--surface)',
+                  color: 'var(--text-primary)',
+                  padding: '12px 28px',
+                  borderRadius: 10,
+                  fontSize: '0.9375rem',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                Start a checklist
+              </Link>
+            </div>
+            <p className='text-xs mt-3' style={{ color: 'var(--text-muted)', maxWidth: '44ch' }}>
+              Fill in the form and we&apos;ll generate a pre-filled summary matching all the DHA forms you need to submit. No data is stored on our servers.
+            </p>
+          </div>
+
+          {/* Permit card stack */}
+          <div
+            className='hidden lg:block relative shrink-0'
+            style={{ width: 320, height: 340 }}
+            aria-hidden='true'
+          >
+            {/* Back card — Permanent Residence */}
+            <div
               style={{
-                backgroundColor: 'var(--amber)',
-                color: 'var(--background)',
-                padding: '12px 28px',
-                borderRadius: 10,
-                fontSize: '0.9375rem',
-              }}
-            >
-              Explore pathways <ArrowRight size={16} />
-            </a>
-            <Link
-              href='/guide'
-              className='no-underline inline-flex items-center gap-2 font-semibold'
-              style={{
-                backgroundColor: 'var(--surface)',
-                color: 'var(--text-primary)',
-                padding: '12px 28px',
-                borderRadius: 10,
-                fontSize: '0.9375rem',
+                position: 'absolute',
+                top: 28,
+                right: 0,
+                width: 272,
+                borderRadius: 14,
+                overflow: 'hidden',
                 border: '1px solid var(--border)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
+                transform: 'rotate(5deg)',
+                backgroundColor: 'var(--background)',
               }}
             >
-              Citizenship guide
-            </Link>
+              <div style={{ backgroundColor: 'oklch(40% 0.09 155)', padding: '14px 18px' }}>
+                <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: 'oklch(78% 0.07 155)', margin: 0 }}>
+                  REPUBLIC OF SOUTH AFRICA
+                </p>
+                <p style={{ fontSize: '0.8rem', fontWeight: 700, color: 'oklch(97% 0.004 155)', margin: '3px 0 0' }}>
+                  Permanent Residence Permit
+                </p>
+              </div>
+              <div style={{ padding: '14px 18px' }}>
+                <div style={{ height: 8, borderRadius: 4, backgroundColor: 'var(--border)', width: '72%', marginBottom: 8 }} />
+                <div style={{ height: 8, borderRadius: 4, backgroundColor: 'var(--border)', width: '48%' }} />
+                <div style={{ display: 'flex', gap: 20, marginTop: 14 }}>
+                  <div>
+                    <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text-muted)', margin: 0 }}>VALIDITY</p>
+                    <p style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', margin: '3px 0 0' }}>Permanent</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text-muted)', margin: 0 }}>SECTION</p>
+                    <p style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', margin: '3px 0 0' }}>26 &amp; 27</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Front card — Critical Skills */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: 284,
+                borderRadius: 14,
+                overflow: 'hidden',
+                border: '1px solid var(--border)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.13)',
+                backgroundColor: 'var(--background)',
+              }}
+            >
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, var(--amber-dark) 0%, oklch(54% 0.13 62) 100%)',
+                  padding: '18px 20px',
+                }}
+              >
+                <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', color: 'oklch(88% 0.08 72)', margin: 0 }}>
+                  REPUBLIC OF SOUTH AFRICA
+                </p>
+                <p style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white', margin: '4px 0 0' }}>
+                  Critical Skills Work Visa
+                </p>
+              </div>
+              <div style={{ padding: '18px 20px' }}>
+                <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text-muted)', margin: '0 0 6px' }}>
+                  PERMIT HOLDER
+                </p>
+                <div style={{ height: 9, borderRadius: 4, backgroundColor: 'var(--border)', width: '78%', marginBottom: 16 }} />
+
+                <div style={{ display: 'flex', gap: 20, marginBottom: 16 }}>
+                  {[
+                    { label: 'VALID FOR', value: '5 Years' },
+                    { label: 'SECTION', value: '19(2)' },
+                    { label: 'STATUS', value: '✓ Active', green: true },
+                  ].map(({ label, value, green }) => (
+                    <div key={label}>
+                      <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text-muted)', margin: 0 }}>
+                        {label}
+                      </p>
+                      <p style={{ fontSize: '0.72rem', fontWeight: 600, color: green ? 'var(--green)' : 'var(--text-primary)', margin: '3px 0 0' }}>
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 12 }}>
+                  <p style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--text-muted)', letterSpacing: '0.05em', margin: 0 }}>
+                    ≪ DHA-19(2)-CSWV-2025 ≫
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
