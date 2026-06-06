@@ -267,13 +267,13 @@ function ApplyPageContent() {
       </div>
 
       {/* Step nav */}
-      <div className='flex items-center gap-0 mb-10 overflow-x-auto pb-2'>
+      <div className='flex items-center gap-0 mb-10'>
         {STEPS.map((s, i) => {
           const Icon = s.icon;
           const isDone = i < step;
           const isCurrent = i === step;
           return (
-            <div key={s.id} className='flex items-center'>
+            <div key={s.id} className='flex items-center flex-1 last:flex-none'>
               <div
                 className='flex items-center gap-2 text-sm font-medium whitespace-nowrap'
                 style={{
@@ -300,9 +300,9 @@ function ApplyPageContent() {
               {i < STEPS.length - 1 && (
                 <div
                   style={{
-                    width: 48, height: 1,
+                    flex: 1, minWidth: 16, height: 1,
                     backgroundColor: i < step ? 'var(--green)' : 'var(--border)',
-                    margin: '0 8px', flexShrink: 0,
+                    margin: '0 8px',
                   }}
                 />
               )}
