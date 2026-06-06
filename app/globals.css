@@ -128,6 +128,25 @@
   }
 }
 
+/* Prevent iOS Safari from auto-zooming on input focus (triggered when font-size < 16px) */
+@media (max-width: 768px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Normalize date inputs to match text input height on iOS */
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'] {
+  -webkit-appearance: none;
+  appearance: none;
+  line-height: normal;
+  min-height: 0;
+}
+
 @layer utilities {
   .heading-display {
     font-family: var(--font-serif), Georgia, serif;
