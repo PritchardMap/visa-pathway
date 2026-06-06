@@ -46,8 +46,7 @@ export const APPLICATION_FORMS: ApplicationForm[] = [
     title: 'DHA-63',
     purpose:
       'Application for Certificate of Naturalisation — the primary statutory application form under the South African Citizenship Regulations.',
-    downloadUrl:
-      'https://www.southafrica-newyork.net/wp-content/uploads/2020/08/DHA63.pdf',
+    downloadUrl: '/forms/DHA63.pdf',
     notes:
       'Primary statutory form used to apply for naturalisation. See also the Government of South Africa guidance: https://www.gov.za/services/services-residents/citizenship/personal-identification/apply-for-sa-citizenship and the Citizenship Regulations: https://www.saflii.org/za/legis/consol_reg/rotsaca1995458/',
   },
@@ -56,8 +55,7 @@ export const APPLICATION_FORMS: ApplicationForm[] = [
     title: 'DHA-529',
     purpose:
       'Determination of citizenship status — used by Home Affairs to confirm whether you are already a South African citizen or require further action before naturalisation.',
-    downloadUrl:
-      'https://www.southafrica-newyork.net/wp-content/uploads/2020/08/DHA529.pdf',
+    downloadUrl: '/forms/DHA529.pdf',
     notes:
       'Often required before a naturalisation application is accepted. Requirements vary by office — see guidance: https://homeaffairsguide.co.za/citizenship/determination-of-citizenship-status/',
   },
@@ -65,8 +63,6 @@ export const APPLICATION_FORMS: ApplicationForm[] = [
     id: 'dha-757',
     title: 'DHA-757',
     purpose: 'Naturalisation questionnaire (supporting form)',
-    downloadUrl:
-      'https://www.southafrica-newyork.net/wp-content/uploads/2020/08/DHA757.pdf',
     notes:
       'Supporting naturalisation questionnaire commonly required alongside DHA-63. Complete fully and submit with your application package.',
   },
@@ -74,8 +70,7 @@ export const APPLICATION_FORMS: ApplicationForm[] = [
     id: 'bi-9',
     title: 'BI-9',
     purpose: 'Application for South African identity document (BI-9 / DHA-9)',
-    downloadUrl:
-      'https://visasinternational.co.za/wp-content/uploads/2023/12/RSA-FirstApplicationForIdentityCardbi-9.pdf',
+    downloadUrl: '/forms/BI-9.pdf',
     notes:
       'Required for issuance/re-issue of a South African ID following naturalisation. Bring passport photos and supporting documents as instructed by Home Affairs.',
   },
@@ -84,7 +79,7 @@ export const APPLICATION_FORMS: ApplicationForm[] = [
     title: 'SAPS 91(a)',
     purpose: 'Fingerprint submission for police clearance',
     downloadUrl:
-      'https://www.elsenburg.com/wp-content/uploads/2022/03/SAPS-91a.pdf',
+      '/forms/SAPS-91a.pdf',
     notes:
       'Provided at SAPS police stations — used for your SA police clearance. The SAPS 91(a) form (PDF) is available to download.',
   },
@@ -232,7 +227,7 @@ export const REQUIRED_DOCUMENTS: RequiredDocument[] = [
       {
         name: 'SAPS 91(a) form (PDF)',
         website:
-          'https://www.elsenburg.com/wp-content/uploads/2022/03/SAPS-91a.pdf',
+          '/forms/SAPS-91a.pdf',
         notes:
           'Download and print the SAPS 91(a) form for fingerprint submission if required by the police station or a private agent.',
       },

@@ -57,7 +57,7 @@ export function Header() {
 
         <div className='flex items-center gap-3'>
           <Link
-            href='/'
+            href='/#pathways'
             className='no-underline shrink-0'
             style={{
               backgroundColor: 'var(--amber)',

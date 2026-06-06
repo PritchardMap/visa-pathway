@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/guide', priority: 0.9 },
     { path: '/checklist', priority: 0.7 },
     { path: '/apply', priority: 0.7 },
+    { path: '/checklists', priority: 0.8 },
     { path: '/critical-skills/guide', priority: 0.9 },
     { path: '/critical-skills/checklist', priority: 0.7 },
     { path: '/general-work/guide', priority: 0.9 },

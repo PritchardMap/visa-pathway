@@ -791,7 +791,7 @@ export default async function GuidePage({
                   accurately and consistently.
                 </p>
                 <Link
-                  href='/apply'
+                  href='/apply?type=citizenship'
                   className='no-underline inline-flex items-center gap-2 font-semibold text-sm'
                   style={{ color: 'var(--green-dark)' }}
                 >
@@ -1030,63 +1030,46 @@ export default async function GuidePage({
           backgroundColor: 'var(--surface)',
         }}
       >
-        <div className='container-page py-10 flex flex-col sm:flex-row items-center justify-between gap-6'>
-          <div>
-            <p className='font-semibold' style={{ color: 'var(--text-primary)' }}>
-              Ready to check off every document?
-            </p>
-            <p className='text-sm m-0' style={{ color: 'var(--text-muted)' }}>
-              Use the interactive checklist to track your progress.
-            </p>
+        <div className='container-page py-10'>
+          <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6'>
+            <div>
+              <p className='font-semibold' style={{ color: 'var(--text-primary)' }}>
+                Ready to start your application?
+              </p>
+              <p className='text-sm m-0' style={{ color: 'var(--text-muted)' }}>
+                Use the checklist to track documents, or the Application Assistant to pre-fill your DHA forms.
+              </p>
+            </div>
+            <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0'>
+              <Link
+                href='/checklist'
+                className='no-underline inline-flex items-center justify-center gap-2 font-semibold'
+                style={{
+                  backgroundColor: 'var(--surface)',
+                  color: 'var(--text-primary)',
+                  padding: '11px 22px',
+                  borderRadius: 10,
+                  fontSize: '0.9375rem',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                Open Checklist
+              </Link>
+              <Link
+                href='/apply?type=citizenship'
+                className='no-underline inline-flex items-center justify-center gap-2 font-semibold'
+                style={{
+                  backgroundColor: 'var(--amber)',
+                  color: 'var(--background)',
+                  padding: '12px 22px',
+                  borderRadius: 10,
+                  fontSize: '0.9375rem',
+                }}
+              >
+                Application Assistant <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
-          <Link
-            href='/checklist'
-            className='no-underline inline-flex items-center gap-2 font-semibold shrink-0'
-            style={{
-              backgroundColor: 'var(--amber)',
-              color: 'var(--background)',
-              padding: '12px 28px',
-              borderRadius: 10,
-              fontSize: '0.9375rem',
-            }}
-          >
-            Open Checklist <ArrowRight size={16} />
-          </Link>
-        </div>
-      </div>
-
-      {/* Bottom CTA */}
-      <div
-        style={{
-          borderTop: '1px solid var(--border)',
-          backgroundColor: 'var(--surface)',
-        }}
-      >
-        <div className='container-page py-10 flex flex-col sm:flex-row items-center justify-between gap-6'>
-          <div>
-            <p
-              className='font-semibold'
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Ready to prepare your application?
-            </p>
-            <p className='text-sm m-0' style={{ color: 'var(--text-muted)' }}>
-              Use the Application Assistant to pre-fill your DHA forms.
-            </p>
-          </div>
-          <Link
-            href='/apply'
-            className='no-underline inline-flex items-center gap-2 font-semibold shrink-0'
-            style={{
-              backgroundColor: 'var(--amber)',
-              color: 'var(--background)',
-              padding: '12px 28px',
-              borderRadius: 10,
-              fontSize: '0.9375rem',
-            }}
-          >
-            Start Application Assistant <ArrowRight size={16} />
-          </Link>
         </div>
       </div>
     </>

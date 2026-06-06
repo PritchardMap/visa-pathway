@@ -4,6 +4,7 @@ import './globals.css';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { SITE_URL, SITE_NAME } from '@/lib/site-config';
+import { Analytics } from '@vercel/analytics/next';
 
 const literata = Literata({
   subsets: ['latin'],
@@ -81,10 +82,11 @@ export default function RootLayout({
       data-scroll-behavior='smooth'
       className={`${literata.variable} ${figtree.variable} h-full antialiased`}
     >
-      <body className='min-h-screen flex flex-col'>
+      <body className='min-h-screen flex flex-col' suppressHydrationWarning>
         <Header />
         <main className='flex-1'>{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );

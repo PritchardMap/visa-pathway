@@ -1,3 +1,11 @@
+export type VisaTypeId =
+  | 'citizenship'
+  | 'general-work'
+  | 'critical-skills'
+  | 'business-visa'
+  | 'study-visa'
+  | 'permanent-residence';
+
 export interface DocumentLocation {
   name: string;
   address?: string;

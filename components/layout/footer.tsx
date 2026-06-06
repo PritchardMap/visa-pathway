@@ -141,9 +141,18 @@ export function Footer() {
             © {new Date().getFullYear()} Visa Pathway. Not affiliated with the
             Department of Home Affairs.
           </p>
-          <p className='text-sm m-0' style={{ color: 'var(--text-muted)' }}>
-            Always verify requirements directly with DHA — rules change.
-          </p>
+          <div className='flex items-center gap-4'>
+            <p className='text-sm m-0' style={{ color: 'var(--text-muted)' }}>
+              Always verify requirements directly with DHA — rules change.
+            </p>
+            <Link
+              href='/privacy'
+              className='text-sm no-underline hover:underline'
+              style={{ color: 'var(--text-muted)', whiteSpace: 'nowrap' }}
+            >
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -2,14 +2,16 @@
 
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { Download, Loader2 } from 'lucide-react';
-import { ApplicationPDF } from './application-pdf';
+import { ApplicationPDF, type PdfData } from './application-pdf';
+import type { VisaTypeId } from '@/lib/visa-types';
 
 interface Props {
-  data: Parameters<typeof ApplicationPDF>[0]['data'];
+  data: Omit<PdfData, 'visaType'>;
+  visaType: VisaTypeId;
   fileName?: string;
 }
 
-export function PdfDownloadButton({ data, fileName }: Props) {
+export function PdfDownloadButton({ data, visaType, fileName }: Props) {
   const fullName = [data.firstName, data.middleNames, data.lastName]
     .filter(Boolean)
     .join('_')
@@ -17,10 +19,11 @@ export function PdfDownloadButton({ data, fileName }: Props) {
 
   const name = fileName ?? `visa-pathway-summary-${fullName}.pdf`;
   const logoUrl = `${window.location.origin}/brand/visa-pathway-logo.png`;
+  const pdfData: PdfData = { ...data, visaType };
 
   return (
     <PDFDownloadLink
-      document={<ApplicationPDF data={data} logoUrl={logoUrl} />}
+      document={<ApplicationPDF data={pdfData} logoUrl={logoUrl} />}
       fileName={name}
     >
       {({ loading }) => (
