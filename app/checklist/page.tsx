@@ -20,6 +20,7 @@ import {
   APPLICATION_FORMS,
   type RequiredDocument,
 } from '@/lib/citizenship-data';
+import { ALL_PATHWAYS } from '@/lib/pathways';
 import LinkifyText from '@/lib/linkify';
 
 const STORAGE_KEY = 'pathway-sa-checklist';
@@ -76,6 +77,8 @@ export default function ChecklistPage() {
     } catch {}
   };
 
+  const otherPathways = ALL_PATHWAYS.filter((p) => p.id !== 'citizenship');
+
   const docCount = REQUIRED_DOCUMENTS.length;
   const formCount = APPLICATION_FORMS.length;
   const checkedDocs = REQUIRED_DOCUMENTS.filter((d) =>
@@ -90,6 +93,43 @@ export default function ChecklistPage() {
 
   return (
     <div className='container-page py-12 md:py-16'>
+      {/* Pathway switcher */}
+      <div className='flex flex-wrap items-center gap-2 mb-8'>
+        <Link href='/' className='label-caps no-underline' style={{ color: 'var(--text-muted)' }}>
+          Home
+        </Link>
+        <span className='label-caps' style={{ color: 'var(--text-muted)' }}>/</span>
+        <Link href='/guide' className='label-caps no-underline' style={{ color: 'var(--text-muted)' }}>
+          Citizenship
+        </Link>
+        <span className='label-caps' style={{ color: 'var(--text-muted)' }}>/ Checklist</span>
+        <span
+          className='label-caps'
+          style={{ color: 'var(--border-strong)', marginLeft: 8, marginRight: 4 }}
+        >
+          |
+        </span>
+        <span className='label-caps shrink-0' style={{ color: 'var(--text-muted)' }}>
+          Other pathways:
+        </span>
+        {otherPathways.map((p) => (
+          <Link
+            key={p.id}
+            href={p.guideHref}
+            className='no-underline text-xs font-medium whitespace-nowrap'
+            style={{
+              backgroundColor: 'var(--surface)',
+              color: 'var(--text-secondary)',
+              padding: '4px 10px',
+              borderRadius: 20,
+              border: '1px solid var(--border)',
+            }}
+          >
+            {p.icon} {p.shortName}
+          </Link>
+        ))}
+      </div>
+
       {/* Header */}
       <div className='max-w-[640px] mb-10'>
         <p className='label-caps mb-3' style={{ color: 'var(--text-muted)' }}>

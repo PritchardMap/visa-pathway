@@ -10,14 +10,14 @@ const literata = Literata({
   subsets: ['latin'],
   variable: '--font-literata',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600'],
 });
 
 const figtree = Figtree({
   subsets: ['latin'],
   variable: '--font-figtree',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600'],
 });
 
 export const metadata: Metadata = {

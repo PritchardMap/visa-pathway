@@ -12,7 +12,8 @@ import {
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
-import type { VisaGuideData } from '@/lib/visa-types';
+import type { VisaGuideData, VisaTypeId } from '@/lib/visa-types';
+import { ALL_PATHWAYS, getRelatedPathways } from '@/lib/pathways';
 import LinkifyText from '@/lib/linkify';
 
 interface Props {
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function VisaGuidePage({ data }: Props) {
+  const otherPathways = ALL_PATHWAYS.filter((p) => p.id !== data.id);
+  const relatedPathways = getRelatedPathways(data.id as VisaTypeId);
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
@@ -69,6 +72,28 @@ export function VisaGuidePage({ data }: Props) {
             <ChevronRight size={14} />
             <span style={{ color: 'var(--text-secondary)' }}>Guide</span>
           </nav>
+          <div className='flex flex-wrap items-center gap-2 mb-5'>
+            <span className='label-caps shrink-0' style={{ color: 'var(--text-muted)' }}>
+              Other pathways:
+            </span>
+            {otherPathways.map((p) => (
+              <Link
+                key={p.id}
+                href={p.guideHref}
+                className='no-underline text-xs font-medium whitespace-nowrap'
+                style={{
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--text-secondary)',
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  border: '1px solid var(--border)',
+                }}
+              >
+                {p.icon} {p.shortName}
+              </Link>
+            ))}
+          </div>
+
           <p className='label-caps mb-3' style={{ color: 'var(--amber-dark)' }}>
             {data.legalBasis}
           </p>
@@ -97,6 +122,28 @@ export function VisaGuidePage({ data }: Props) {
               </div>
             ))}
           </div>
+
+          {data.eligibility.length > 0 && (
+            <div className='flex flex-wrap items-center gap-2 mt-6'>
+              <span className='label-caps shrink-0' style={{ color: 'var(--text-muted)' }}>
+                You qualify if:
+              </span>
+              {data.eligibility.slice(0, 3).map((c) => (
+                <span
+                  key={c.id}
+                  className='text-xs font-medium'
+                  style={{
+                    backgroundColor: 'var(--green-subtle)',
+                    color: 'var(--green-dark)',
+                    padding: '4px 10px',
+                    borderRadius: 20,
+                  }}
+                >
+                  {c.title}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -705,6 +752,56 @@ export function VisaGuidePage({ data }: Props) {
           </p>
         </div>
       </div>
+
+      {/* Related pathways */}
+      {relatedPathways.length > 0 && (
+        <div style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <div className='container-page py-10'>
+            <p className='label-caps mb-4' style={{ color: 'var(--text-muted)' }}>
+              Explore related pathways
+            </p>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              {relatedPathways.map((p) => (
+                <div
+                  key={p.id}
+                  style={{
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 12,
+                    padding: '18px 20px',
+                  }}
+                >
+                  <p className='text-lg mb-2' style={{ lineHeight: 1 }}>
+                    {p.icon}
+                  </p>
+                  <p className='font-semibold text-sm mb-1' style={{ color: 'var(--text-primary)' }}>
+                    {p.shortName}
+                  </p>
+                  <p className='text-xs mb-3' style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    {p.tagline}
+                  </p>
+                  <div className='flex items-center gap-4'>
+                    <Link
+                      href={p.guideHref}
+                      className='no-underline text-xs font-semibold'
+                      style={{ color: 'var(--amber-dark)' }}
+                    >
+                      Read guide →
+                    </Link>
+                    <Link
+                      href={p.checklistHref}
+                      className='no-underline text-xs font-medium'
+                      style={{ color: 'var(--green-dark)' }}
+                    >
+                      Checklist →
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom CTA */}
       <div

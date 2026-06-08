@@ -17,6 +17,7 @@ import {
   Clock,
 } from 'lucide-react';
 import type { VisaGuideData } from '@/lib/visa-types';
+import { ALL_PATHWAYS } from '@/lib/pathways';
 import LinkifyText from '@/lib/linkify';
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
 
 export function VisaChecklistPage({ data }: Props) {
   const STORAGE_KEY = `pathway-checklist-${data.id}`;
+  const otherPathways = ALL_PATHWAYS.filter((p) => p.id !== data.id);
   const ALL_IDS = data.documents.map((d) => d.id);
 
   const [checked, setChecked] = useState<Set<string>>(new Set());
@@ -110,6 +112,28 @@ export function VisaChecklistPage({ data }: Props) {
             <ChevronRight size={14} />
             <span style={{ color: 'var(--text-secondary)' }}>Checklist</span>
           </nav>
+          <div className='flex flex-wrap items-center gap-2 mb-5'>
+            <span className='label-caps shrink-0' style={{ color: 'var(--text-muted)' }}>
+              Other pathways:
+            </span>
+            {otherPathways.map((p) => (
+              <Link
+                key={p.id}
+                href={p.guideHref}
+                className='no-underline text-xs font-medium whitespace-nowrap'
+                style={{
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--text-secondary)',
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  border: '1px solid var(--border)',
+                }}
+              >
+                {p.icon} {p.shortName}
+              </Link>
+            ))}
+          </div>
+
           <p className='label-caps mb-3' style={{ color: 'var(--amber-dark)' }}>
             {data.name}
           </p>
